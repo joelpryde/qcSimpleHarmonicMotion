@@ -17,10 +17,9 @@ class Pendulum;
 {
     Pendulum* pendulums[15];
     float startTime;
-    float size;
 }
 
 @property (assign) id<QCPlugInOutputImageProvider> outputVideoImage;
-@property double inputTilt;
+@property (assign) double inputSize;
 
 @end

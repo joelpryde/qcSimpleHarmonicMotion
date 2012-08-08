@@ -20,7 +20,7 @@ using namespace std;
 @implementation kinectComposerPlugIn
 
 @dynamic outputVideoImage;
-@dynamic inputTilt;
+@dynamic inputSize;
 
 + (NSDictionary *)attributes;
 {
@@ -38,12 +38,12 @@ using namespace std;
 						@"outputVideoImage",
                        
 						[NSDictionary dictionaryWithObjectsAndKeys:
-							@"Tilt", QCPortAttributeNameKey,
-							[NSNumber numberWithInt:0], QCPortAttributeDefaultValueKey,
-							[NSNumber numberWithInt:-31], QCPortAttributeMinimumValueKey,
-							[NSNumber numberWithInt:32], QCPortAttributeMaximumValueKey,
+							@"Size", QCPortAttributeNameKey,
+							[NSNumber numberWithFloat:0.0f], QCPortAttributeDefaultValueKey,
+							[NSNumber numberWithFloat:0.0f], QCPortAttributeMinimumValueKey,
+							[NSNumber numberWithFloat:1000.0f], QCPortAttributeMaximumValueKey,
 							nil],
-						@"inputTilt",
+						@"inputSize",
                        
 						nil];
 	}
@@ -108,26 +108,24 @@ using namespace std;
 	CGLContextObj cgl_ctx = [context CGLContextObj];
 	CGLSetCurrentContext(cgl_ctx);
     
+    NSRect bounds = [context bounds];
+    
     // update
     // seconds since we started the app (minus setup time)
     float secs = time;//getElapsedSeconds() - startTime;
         
     // loop through, update and draw pendulums
-    size = 40.0f;
+    float size = 40.0f;
+    if ([self didValueForInputKeyChange:@"inputSize"]) 
+    {
+        size = [[self valueForInputKey:@"inputSize"] floatValue];
+    }
     for (int c=0; c<15; c++) 
     {
         pendulums[c]->update(secs, lmap((float)c, 0.0f, 15.0f-1.0f, size/2.0f, 640.0f - size/2.0f), size);
     }
     
-	if ([self didValueForInputKeyChange:@"inputTilt"]) 
-    {
-        double size = [[self valueForInputKey:@"inputTilt"] floatValue];
-        self.outputVideoImage = [[[CGLTextureImageProvider alloc] initWithPendulums:pendulums] autorelease];
-    }
-    else
-    {
-        self.outputVideoImage = [[[CGLTextureImageProvider alloc] initWithPendulums:pendulums] autorelease];
-    }
+    self.outputVideoImage = [[[CGLTextureImageProvider alloc] initWithPendulums:pendulums] autorelease];
     
 	CGLSetCurrentContext(ctx);	
 	return YES;

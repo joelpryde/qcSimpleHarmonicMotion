@@ -22,7 +22,6 @@ class Pendulum;
 {
 	//cinder::gl::Texture texture;
 	CGColorSpaceRef colorSpace;
-    float               mSize;
 }
 
 //@property (nonatomic, assign) cinder::gl::Texture texture;

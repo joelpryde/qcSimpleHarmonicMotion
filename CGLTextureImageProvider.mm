@@ -72,7 +72,7 @@ Pendulum**          mPendulums;
 	CGLSetCurrentContext(cgl_ctx);
 	
     // clear out the window with black
-    gl::setMatricesWindowPersp(640.0f, 480.0f);
+    gl::setMatricesWindowPersp(bounds.size.width, bounds.size.height);
 	gl::clear( Color( 0, 0, 0 ) ); 
     
     // loop through, update and draw pendulums
