@@ -8,6 +8,7 @@ using namespace std;
 class Pendulum 
 {
     // physical params
+    int count;
     int index;
     float freq;      // oscilations per second
     
@@ -25,11 +26,11 @@ class Pendulum
     
     // contructor
 public:
-    Pendulum(int _index, float _freq, int _pitch);
+    Pendulum(int _count, int _index, float _freq, int _pitch);
     
     // update position and trigger sound if nessecary
-    void update(float _t, float _x, float _size);
+    void update(float _t, float _c, float _width, float _height, float _size);
     
     // draw
-    void draw(Pendulum** pendulums);
+    void draw(Pendulum** pendulums, int count);
 };

@@ -15,11 +15,20 @@ class Pendulum;
 
 @interface kinectComposerPlugIn : QCPlugIn
 {
-    Pendulum* pendulums[15];
+    int count;
+    Pendulum* pendulums[100];
     float startTime;
+    
+    float size;
+    float width;
+    float height;
 }
 
 @property (assign) id<QCPlugInOutputImageProvider> outputVideoImage;
+
+@property (assign) double inputCount;
 @property (assign) double inputSize;
+@property (assign) double inputWidth;
+@property (assign) double inputHeight;
 
 @end

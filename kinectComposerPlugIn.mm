@@ -20,7 +20,10 @@ using namespace std;
 @implementation kinectComposerPlugIn
 
 @dynamic outputVideoImage;
+@dynamic inputCount;
 @dynamic inputSize;
+@dynamic inputWidth;
+@dynamic inputHeight;
 
 + (NSDictionary *)attributes;
 {
@@ -37,6 +40,14 @@ using namespace std;
 							nil],
 						@"outputVideoImage",
                        
+                       [NSDictionary dictionaryWithObjectsAndKeys:
+                            @"Count", QCPortAttributeNameKey,
+                            [NSNumber numberWithFloat:15], QCPortAttributeDefaultValueKey,
+                            [NSNumber numberWithFloat:0], QCPortAttributeMinimumValueKey,
+                            [NSNumber numberWithFloat:100], QCPortAttributeMaximumValueKey,
+                            nil],
+                           @"inputCount",
+                       
 						[NSDictionary dictionaryWithObjectsAndKeys:
 							@"Size", QCPortAttributeNameKey,
 							[NSNumber numberWithFloat:0.0f], QCPortAttributeDefaultValueKey,
@@ -44,6 +55,22 @@ using namespace std;
 							[NSNumber numberWithFloat:1000.0f], QCPortAttributeMaximumValueKey,
 							nil],
 						@"inputSize",
+                       
+                       [NSDictionary dictionaryWithObjectsAndKeys:
+                        @"Width", QCPortAttributeNameKey,
+                        [NSNumber numberWithFloat:640.0f], QCPortAttributeDefaultValueKey,
+                        [NSNumber numberWithFloat:0.0f], QCPortAttributeMinimumValueKey,
+                        [NSNumber numberWithFloat:4000.0f], QCPortAttributeMaximumValueKey,
+                        nil],
+                       @"inputWidth",
+                       
+                       [NSDictionary dictionaryWithObjectsAndKeys:
+                        @"Height", QCPortAttributeNameKey,
+                        [NSNumber numberWithFloat:480.0f], QCPortAttributeDefaultValueKey,
+                        [NSNumber numberWithFloat:0.0f], QCPortAttributeMinimumValueKey,
+                        [NSNumber numberWithFloat:4000.0f], QCPortAttributeMaximumValueKey,
+                        nil],
+                       @"inputHeight",
                        
 						nil];
 	}
@@ -84,11 +111,14 @@ using namespace std;
 
 - (BOOL) startExecution:(id<QCPlugInContext>)context;
 {
-    for (int i=0; i<15; i++)
+    count = 15;
+    for (int i=0; i<count; i++)
     {
         float freq = (51.0 + i)/60.0;
-        pendulums[i] = new Pendulum(i, freq, 0);
+        pendulums[i] = new Pendulum(count, i, freq, 0);
     }
+    size = 40.0f;
+    width = 640.0f; height = 480.0f;
         
     // save time we have finished the setup, to ensure pendulums start at t==0
     //startTime = getElapsedSeconds();
@@ -112,20 +142,29 @@ using namespace std;
     
     // update
     // seconds since we started the app (minus setup time)
-    float secs = time;//getElapsedSeconds() - startTime;
+    float secs = time / 2.0f;
         
-    // loop through, update and draw pendulums
-    float size = 40.0f;
+    if ([self didValueForInputKeyChange:@"inputCount"]) 
+    {
+        count = [[self valueForInputKey:@"inputCount"] intValue];
+        for (int i=0; i<count; i++)
+        {
+            float freq = (51.0 + i)/60.0;
+            pendulums[i] = new Pendulum(count, i, freq, 0);
+        }
+    }
     if ([self didValueForInputKeyChange:@"inputSize"]) 
-    {
         size = [[self valueForInputKey:@"inputSize"] floatValue];
-    }
-    for (int c=0; c<15; c++) 
-    {
-        pendulums[c]->update(secs, lmap((float)c, 0.0f, 15.0f-1.0f, size/2.0f, 640.0f - size/2.0f), size);
-    }
+    if ([self didValueForInputKeyChange:@"inputWidth"]) 
+        width = [[self valueForInputKey:@"inputWidth"] floatValue];
+    if ([self didValueForInputKeyChange:@"inputHeight"]) 
+        height = [[self valueForInputKey:@"inputHeight"] floatValue];
     
-    self.outputVideoImage = [[[CGLTextureImageProvider alloc] initWithPendulums:pendulums] autorelease];
+    // loop through, update and draw pendulums
+    for (int c=0; c<count; c++) 
+        pendulums[c]->update(secs, c, width, height, size);
+    
+    self.outputVideoImage = [[[CGLTextureImageProvider alloc] initWithPendulums:pendulums withSize:CGSizeMake(width, height) withCount:count] autorelease];
     
 	CGLSetCurrentContext(ctx);	
 	return YES;

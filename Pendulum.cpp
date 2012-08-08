@@ -2,8 +2,9 @@
 
 #define PI 3.14159
 
-Pendulum::Pendulum(int _index, float _freq, int _pitch) 
+Pendulum::Pendulum(int _count, int _index, float _freq, int _pitch) 
 {
+    count = _count;
     index = _index;
     freq = _freq;
     pitch = _pitch;
@@ -13,7 +14,7 @@ Pendulum::Pendulum(int _index, float _freq, int _pitch)
 }
 
 // update position and trigger sound if nessecary
-void Pendulum::update(float _t, float _x, float _size) 
+void Pendulum::update(float _t, float _c, float _width, float _height, float _size) 
 {
     float oldPos = pos;     // save old position
     float oldVel = vel;     // save old direction
@@ -29,12 +30,13 @@ void Pendulum::update(float _t, float _x, float _size)
         hit *= 0.85;
     }
     
-    pt = Vec2f(_x, lmap(pos, -1.0f, 1.0f, _size/2.0f, 480.0f-_size/2.0f));
+    pt = Vec2f(lmap((float)_c, 0.0f, (float)count-1.0f, _size/2.0f, _width - _size/2.0f), 
+               lmap(pos, -1.0f, 1.0f, _size/2.0f, _height-_size/2.0f));
     size = _size;
 }
 
 // draw
-void Pendulum::draw(Pendulum** pendulums) 
+void Pendulum::draw(Pendulum** pendulums, int count) 
 {
     // set color
     float r = lerp(0.1f, 1.0f, hit);
@@ -48,7 +50,7 @@ void Pendulum::draw(Pendulum** pendulums)
     gl::color(1.0f, 1.0f, 1.0f);
     gl::drawStrokedEllipse(pt, size, size);
     
-    for (int i=0; i<15; i++)
+    for (int i=0; i<count; i++)
     {
         if (pendulums[i] != this)
         {

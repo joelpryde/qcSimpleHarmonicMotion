@@ -27,12 +27,14 @@ Pendulum**          mPendulums;
 
 @implementation CGLTextureImageProvider
 
-- (id)initWithPendulums:(Pendulum**)pendulums
+- (id)initWithPendulums:(Pendulum**)pendulums withSize:(CGSize)sz withCount:(int)ct
 {
 	if (!(self = [super init]))
 		return nil;
     
     colorSpace = CGColorSpaceCreateDeviceRGB();
+    size = sz;
+    count = ct;
     
     if (!mSetup)
     {
@@ -53,17 +55,7 @@ Pendulum**          mPendulums;
 
 - (NSRect)imageBounds;
 {
-    /*
-	if (texture) 
-    {
-        //NSLog( @"image bounds: %d, %d", texture.getWidth(), texture.getHeight());
-		return NSMakeRect(0, 0, texture.getWidth(), texture.getHeight());
-	}
-	else {
-        //NSLog( @"image bounds: %d, %d", 640, 480);
-		return NSMakeRect(0, 0, 640, 480);
-	}*/
-    return NSMakeRect(0, 0, 640, 480);
+    return NSMakeRect(0, 0, size.width, size.height);
 }
 
 - (BOOL)renderWithCGLContext:(CGLContextObj)cgl_ctx forBounds:(NSRect)bounds;
@@ -72,13 +64,13 @@ Pendulum**          mPendulums;
 	CGLSetCurrentContext(cgl_ctx);
 	
     // clear out the window with black
-    gl::setMatricesWindowPersp(bounds.size.width, bounds.size.height);
+    gl::setMatricesWindowPersp(size.width, size.height);
 	gl::clear( Color( 0, 0, 0 ) ); 
     
     // loop through, update and draw pendulums
-    for (int c=0; c<15; c++) 
+    for (int c=0; c<count; c++) 
     {
-        mPendulums[c]->draw(mPendulums);
+        mPendulums[c]->draw(mPendulums, count);
     }
 	
 	CGLSetCurrentContext(ctx);

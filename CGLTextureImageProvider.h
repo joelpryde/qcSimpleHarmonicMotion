@@ -22,10 +22,11 @@ class Pendulum;
 {
 	//cinder::gl::Texture texture;
 	CGColorSpaceRef colorSpace;
+    CGSize size;
+    int count;
 }
 
 //@property (nonatomic, assign) cinder::gl::Texture texture;
-
-- (id)initWithPendulums:(Pendulum**)pendulums;
+- (id)initWithPendulums:(Pendulum**)pendulums withSize:(CGSize)sz withCount:(int)ct;
 
 @end
