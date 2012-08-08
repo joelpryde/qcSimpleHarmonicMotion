@@ -32,7 +32,7 @@
 		03CFA44F12BF16C600F8905E /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03CFA44E12BF16C600F8905E /* QuickTime.framework */; };
 		03CFA45312BF16D900F8905E /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03CFA45212BF16D900F8905E /* Accelerate.framework */; };
 		03F9005912BF1CD4003A42FA /* CGLTextureImageProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = 03F9005812BF1CD4003A42FA /* CGLTextureImageProvider.mm */; };
-		16BA95420A7EB2EB001E4983 /* kinectComposerPlugIn.mm in Sources */ = {isa = PBXBuildFile; fileRef = 16BA95410A7EB2EB001E4983 /* kinectComposerPlugIn.mm */; };
+		16BA95420A7EB2EB001E4983 /* qcSimpleHarmonicMotionPlugIn.mm in Sources */ = {isa = PBXBuildFile; fileRef = 16BA95410A7EB2EB001E4983 /* qcSimpleHarmonicMotionPlugIn.mm */; };
 		16BA96310A7EB9AC001E4983 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16BA96300A7EB9AC001E4983 /* Quartz.framework */; };
 		5D1BB4AC15CD74D5001029D7 /* Pendulum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5D1BB4AB15CD74D5001029D7 /* Pendulum.cpp */; };
 		7238D5520DB6988600E9A42D /* Settings.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7238D5500DB6988600E9A42D /* Settings.xib */; };
@@ -63,8 +63,8 @@
 		03F9005812BF1CD4003A42FA /* CGLTextureImageProvider.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CGLTextureImageProvider.mm; sourceTree = "<group>"; };
 		1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		16AA5C440A7EEE7300888E31 /* qcTest_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = qcTest_Prefix.pch; sourceTree = "<group>"; };
-		16BA95400A7EB2EB001E4983 /* kinectComposerPlugIn.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = kinectComposerPlugIn.h; sourceTree = "<group>"; };
-		16BA95410A7EB2EB001E4983 /* kinectComposerPlugIn.mm */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = kinectComposerPlugIn.mm; sourceTree = "<group>"; };
+		16BA95400A7EB2EB001E4983 /* qcSimpleHarmonicMotionPlugIn.h */ = {isa = PBXFileReference; fileEncoding = 30; path = qcSimpleHarmonicMotionPlugIn.h; sourceTree = "<group>"; };
+		16BA95410A7EB2EB001E4983 /* qcSimpleHarmonicMotionPlugIn.mm */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = qcSimpleHarmonicMotionPlugIn.mm; sourceTree = "<group>"; };
 		16BA96300A7EB9AC001E4983 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = /System/Library/Frameworks/Quartz.framework; sourceTree = "<absolute>"; };
 		5D1BB4AB15CD74D5001029D7 /* Pendulum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Pendulum.cpp; sourceTree = "<group>"; };
 		5D1BB4AD15CD74EB001029D7 /* Pendulum.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Pendulum.h; sourceTree = "<group>"; };
@@ -137,8 +137,8 @@
 		08FB77AFFE84173DC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				16BA95400A7EB2EB001E4983 /* kinectComposerPlugIn.h */,
-				16BA95410A7EB2EB001E4983 /* kinectComposerPlugIn.mm */,
+				16BA95400A7EB2EB001E4983 /* qcSimpleHarmonicMotionPlugIn.h */,
+				16BA95410A7EB2EB001E4983 /* qcSimpleHarmonicMotionPlugIn.mm */,
 				03F9005712BF1CD4003A42FA /* CGLTextureImageProvider.h */,
 				03F9005812BF1CD4003A42FA /* CGLTextureImageProvider.mm */,
 				5D1BB4AB15CD74D5001029D7 /* Pendulum.cpp */,
@@ -241,7 +241,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				16BA95420A7EB2EB001E4983 /* kinectComposerPlugIn.mm in Sources */,
+				16BA95420A7EB2EB001E4983 /* qcSimpleHarmonicMotionPlugIn.mm in Sources */,
 				03F9005912BF1CD4003A42FA /* CGLTextureImageProvider.mm in Sources */,
 				5D1BB4AC15CD74D5001029D7 /* Pendulum.cpp in Sources */,
 			);
@@ -273,6 +273,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CINDER_PATH = /Users/joelpryde/Documents/cinder_master;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -286,6 +287,7 @@
 				INSTALL_PATH = "$(HOME)/Library/Graphics/Quartz Composer Plug-Ins";
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder_d.a\"";
 				PRODUCT_NAME = qcSimpleHarmonicMotion;
+				SDKROOT = macosx10.6;
 				WRAPPER_EXTENSION = plugin;
 				ZERO_LINK = YES;
 			};
@@ -295,6 +297,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CINDER_PATH = /Users/joelpryde/Documents/cinder_master;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_OBJC_GC = supported;
 				GCC_MODEL_TUNING = G5;
@@ -305,6 +308,7 @@
 				INSTALL_PATH = "$(HOME)/Library/Graphics/Quartz Composer Plug-Ins";
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder_d.a\"";
 				PRODUCT_NAME = qcSimpleHarmonicMotion;
+				SDKROOT = macosx10.6;
 				WRAPPER_EXTENSION = plugin;
 			};
 			name = Release;
@@ -313,8 +317,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CINDER_PATH = /Users/joel/Documents/cinder_master;
+				ARCHS = i386;
+				CINDER_PATH = /Users/joelpryde/Documents/cinder_master;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -325,7 +329,7 @@
 					../../include,
 				);
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx10.6;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../../include";
 			};
 			name = Debug;
@@ -334,8 +338,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CINDER_PATH = /Users/joel/Documents/cinder_master;
+				ARCHS = i386;
+				CINDER_PATH = /Users/joelpryde/Documents/cinder_master;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -345,7 +349,7 @@
 					"\"$(CINDER_PATH)/boost\"",
 					../../include,
 				);
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx10.6;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../../include";
 			};
 			name = Release;
@@ -353,14 +357,18 @@
 		233E2D8A0A83C7AC005A62DF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CINDER_PATH = /Users/joelpryde/Documents/cinder_master;
 				PRODUCT_NAME = "Build & Install";
+				SDKROOT = macosx10.6;
 			};
 			name = Debug;
 		};
 		233E2D8B0A83C7AC005A62DF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CINDER_PATH = /Users/joelpryde/Documents/cinder_master;
 				PRODUCT_NAME = "Build & Install";
+				SDKROOT = macosx10.6;
 			};
 			name = Release;
 		};

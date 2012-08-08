@@ -6,7 +6,7 @@
 //  Copyright (c) 2010 __MyCompanyName__. All rights reserved.
 //
 
-#import "kinectComposerPlugIn.h"
+#import "qcSimpleHarmonicMotionPlugIn.h"
 #import "CGLTextureImageProvider.h"
 #import "Pendulum.h"
 
@@ -17,7 +17,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-@implementation kinectComposerPlugIn
+@implementation qcSimpleHarmonicMotionPlugIn
 
 @dynamic outputVideoImage;
 @dynamic inputCount;
@@ -107,7 +107,7 @@ using namespace std;
 
 @end
 
-@implementation kinectComposerPlugIn (Execution)
+@implementation qcSimpleHarmonicMotionPlugIn (Execution)
 
 - (BOOL) startExecution:(id<QCPlugInContext>)context;
 {
@@ -164,7 +164,8 @@ using namespace std;
     for (int c=0; c<count; c++) 
         pendulums[c]->update(secs, c, width, height, size);
     
-    self.outputVideoImage = [[[CGLTextureImageProvider alloc] initWithPendulums:pendulums withSize:CGSizeMake(width, height) withCount:count] autorelease];
+    MyTextureImageProvider* textureImageProvider = [MyTextureImageProvider alloc];
+    self.outputVideoImage = [[textureImageProvider initWithPendulums:pendulums withSize:CGSizeMake(width, height) withCount:count] autorelease];
     
 	CGLSetCurrentContext(ctx);	
 	return YES;

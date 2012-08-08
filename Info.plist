@@ -22,7 +22,7 @@
 	<string>1.0</string>
 	<key>QCPlugInClasses</key>
 	<array>
-		<string>kinectComposerPlugIn</string>
+		<string>qcSimpleHarmonicMotionPlugIn</string>
 	</array>
 </dict>
 </plist>

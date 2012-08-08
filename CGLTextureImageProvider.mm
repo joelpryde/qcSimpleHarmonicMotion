@@ -25,7 +25,7 @@ using namespace std;
 bool                mSetup;
 Pendulum**          mPendulums;
 
-@implementation CGLTextureImageProvider
+@implementation MyTextureImageProvider
 
 - (id)initWithPendulums:(Pendulum**)pendulums withSize:(CGSize)sz withCount:(int)ct
 {

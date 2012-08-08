@@ -18,7 +18,7 @@ using namespace ci::gl;
 
 class Pendulum;
 
-@interface CGLTextureImageProvider : NSObject <QCPlugInOutputImageProvider>
+@interface MyTextureImageProvider : NSObject <QCPlugInOutputImageProvider>
 {
 	//cinder::gl::Texture texture;
 	CGColorSpaceRef colorSpace;

@@ -13,7 +13,7 @@
 
 class Pendulum;
 
-@interface kinectComposerPlugIn : QCPlugIn
+@interface qcSimpleHarmonicMotionPlugIn : QCPlugIn
 {
     int count;
     Pendulum* pendulums[100];
