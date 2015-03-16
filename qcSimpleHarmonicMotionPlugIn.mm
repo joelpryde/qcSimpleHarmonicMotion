@@ -1,191 +1,260 @@
 //
-//  kinectComposerPlugIn.m
-//  kinectComposer
+//  qcSimpleHarmonicMotionPlugin.mm
+//  qcSimpleHarmonicMotionPlugin
 //
-//  Created by Devin Chalmers on 12/19/10.
-//  Copyright (c) 2010 __MyCompanyName__. All rights reserved.
+//  Created by Joel Pryde on 12/19/13.
+//  Copyright (c) 2013 __MyCompanyName__. All rights reserved.
 //
 
 #import "qcSimpleHarmonicMotionPlugIn.h"
-#import "CGLTextureImageProvider.h"
 #import "Pendulum.h"
+
+#include "cinder/cocoa/CinderCocoa.h"
+#include "cinder/ImageSourceFileQuartz.h"
+#include "cinder/ImageTargetFileQuartz.h"
+#include "cinder/CinderMath.h"
+
 
 #define	kQCPlugIn_Name				@"qcSimpleHarmonicMotion"
 #define	kQCPlugIn_Description		@"A Cinder port of Memo's Simple Harmonic Motion test"
 
-using namespace ci;
-using namespace ci::app;
-using namespace std;
-
 @implementation qcSimpleHarmonicMotionPlugIn
 
-@dynamic outputVideoImage;
-@dynamic inputCount;
-@dynamic inputSize;
 @dynamic inputWidth;
 @dynamic inputHeight;
 
+@dynamic inputCount;
+@dynamic inputSize;
+
+@synthesize size = mSize;
+
+static NSMutableDictionary *sAttributes = nil;
+
 + (NSDictionary *)attributes;
 {
-	return [NSDictionary dictionaryWithObjectsAndKeys:kQCPlugIn_Name, QCPlugInAttributeNameKey, kQCPlugIn_Description, QCPlugInAttributeDescriptionKey, nil];
+    return [NSDictionary dictionaryWithObjectsAndKeys:kQCPlugIn_Name, QCPlugInAttributeNameKey, kQCPlugIn_Description, QCPlugInAttributeDescriptionKey, nil];
 }
 
 + (NSDictionary *)attributesForPropertyPortWithKey:(NSString *)key;
 {
-	static NSDictionary *sAttributes = nil;
-	if (!sAttributes) {
-		sAttributes = [[NSDictionary alloc] initWithObjectsAndKeys:
-						[NSDictionary dictionaryWithObjectsAndKeys:
-							@"Output Video Image", QCPortAttributeNameKey,
-							nil],
-						@"outputVideoImage",
-                       
-                       [NSDictionary dictionaryWithObjectsAndKeys:
-                            @"Count", QCPortAttributeNameKey,
-                            [NSNumber numberWithFloat:15], QCPortAttributeDefaultValueKey,
-                            [NSNumber numberWithFloat:0], QCPortAttributeMinimumValueKey,
-                            [NSNumber numberWithFloat:100], QCPortAttributeMaximumValueKey,
-                            nil],
-                           @"inputCount",
-                       
-						[NSDictionary dictionaryWithObjectsAndKeys:
-							@"Size", QCPortAttributeNameKey,
-							[NSNumber numberWithFloat:0.0f], QCPortAttributeDefaultValueKey,
-							[NSNumber numberWithFloat:0.0f], QCPortAttributeMinimumValueKey,
-							[NSNumber numberWithFloat:1000.0f], QCPortAttributeMaximumValueKey,
-							nil],
-						@"inputSize",
-                       
-                       [NSDictionary dictionaryWithObjectsAndKeys:
-                        @"Width", QCPortAttributeNameKey,
-                        [NSNumber numberWithFloat:640.0f], QCPortAttributeDefaultValueKey,
-                        [NSNumber numberWithFloat:0.0f], QCPortAttributeMinimumValueKey,
-                        [NSNumber numberWithFloat:4000.0f], QCPortAttributeMaximumValueKey,
-                        nil],
-                       @"inputWidth",
-                       
-                       [NSDictionary dictionaryWithObjectsAndKeys:
-                        @"Height", QCPortAttributeNameKey,
-                        [NSNumber numberWithFloat:480.0f], QCPortAttributeDefaultValueKey,
-                        [NSNumber numberWithFloat:0.0f], QCPortAttributeMinimumValueKey,
-                        [NSNumber numberWithFloat:4000.0f], QCPortAttributeMaximumValueKey,
-                        nil],
-                       @"inputHeight",
-                       
-						nil];
-	}
-	return [sAttributes objectForKey:key];
+    if (sAttributes == nil)
+    {
+        sAttributes = [[NSMutableDictionary alloc] init];
+        [qcSimpleHarmonicMotionPlugIn addFloatAttribute:@"inputWidth" Default:640.0f Min:0.0f Max:4000.0f];
+        [qcSimpleHarmonicMotionPlugIn addFloatAttribute:@"inputHeight" Default:640.0f Min:0.0f Max:4000.0f];
+        
+        [qcSimpleHarmonicMotionPlugIn addFloatAttribute:@"inputCount" Default:15.0f Min:0.0f Max:100.0f];
+        [qcSimpleHarmonicMotionPlugIn addFloatAttribute:@"inputSize" Default:10.0f Min:0.0f Max:1000.0f];
+    }
+    return [sAttributes objectForKey:key];
+}
+
++ (void)addFloatAttribute:(NSString *)key Default:(float)def Min:(float)min Max:(float)max
+{
+    [sAttributes setObject: [NSDictionary dictionaryWithObjectsAndKeys: key, QCPortAttributeNameKey, [NSNumber numberWithFloat:def], QCPortAttributeDefaultValueKey, [NSNumber numberWithFloat:min], QCPortAttributeMinimumValueKey, [NSNumber numberWithFloat:max], QCPortAttributeMaximumValueKey, nil] forKey:key];
+}
+
++ (void)addBoolAttribute:(NSString *)key Default:(bool)def
+{
+    [sAttributes setObject: [NSDictionary dictionaryWithObjectsAndKeys: key, QCPortAttributeNameKey, [NSNumber numberWithBool:def], QCPortAttributeDefaultValueKey, nil] forKey:key];
+}
+
+- (float)floatParam:(NSString*)paramName
+{
+    return [[self valueForInputKey:paramName] floatValue];
+}
+
+- (int)intParam:(NSString*)paramName
+{
+    return [[self valueForInputKey:paramName] intValue];
+}
+
+- (bool)boolParam:(NSString*)paramName
+{
+    return [[self valueForInputKey:paramName] boolValue];
+}
+
+- (NSString*)stringParam:(NSString*)paramName
+{
+    return [self valueForInputKey:paramName];
 }
 
 + (QCPlugInExecutionMode)executionMode;
 {
-	return kQCPlugInExecutionModeProcessor;
+    return kQCPlugInExecutionModeConsumer;
 }
 
 + (QCPlugInTimeMode)timeMode;
 {
-	return kQCPlugInTimeModeIdle;
+    return kQCPlugInTimeModeTimeBase;
 }
 
 - (void) finalize;
 {
-	/*
-	Release any non garbage collected resources created in -init.
-	*/
-	
-	[super finalize];
+    /*
+     Release any non garbage collected resources created in -init.
+     */
+    
+    [super finalize];
 }
 
 - (void) dealloc;
 {
-	/*
-	Release any resources created in -init.
-	*/
-	
-	[super dealloc];
+    /*
+     Release any resources created in -init.
+     */
+    
+    [super dealloc];
 }
 
-@end
-
-@implementation qcSimpleHarmonicMotionPlugIn (Execution)
-
-- (BOOL) startExecution:(id<QCPlugInContext>)context;
+- (void)setup
 {
-    count = 15;
-    for (int i=0; i<count; i++)
+    mCount = 15;
+    for (int i=0; i<mCount; i++)
     {
         float freq = (51.0 + i)/60.0;
-        pendulums[i] = new Pendulum(count, i, freq, 0);
+        mPendulums[i] = new Pendulum(mCount, i, freq, 0);
     }
-    size = 40.0f;
-    width = 640.0f; height = 480.0f;
-        
+    mWidth = 640.0f; mHeight = 480.0f;
+    
     // save time we have finished the setup, to ensure pendulums start at t==0
     //startTime = getElapsedSeconds();
-	return YES;
+}
+
+fs::path getQCResourcePath( const fs::path &rsrcRelativePath )
+{
+    fs::path path = rsrcRelativePath.parent_path();
+    fs::path fileName = rsrcRelativePath.filename();
+    
+    if( fileName.empty() )
+        return string();
+    
+    NSString *pathNS = 0;
+    if( ( ! path.empty() ) && ( path != rsrcRelativePath ) )
+        pathNS = [NSString stringWithUTF8String:path.c_str()];
+    
+    NSString *resultPath;
+    for ( NSBundle* bundle in [NSBundle allBundles])
+    {
+        resultPath = [bundle pathForResource:[NSString stringWithUTF8String:fileName.c_str()] ofType:nil inDirectory:pathNS];
+        if( resultPath != nil )
+            break;
+    }
+    
+    return fs::path([resultPath cStringUsingEncoding:NSUTF8StringEncoding]);
+}
+
+DataSourceRef loadQCResource( const string &macPath )
+{
+    fs::path resourcePath = getQCResourcePath( macPath );
+    if( resourcePath.empty() )
+        throw ResourceLoadExc( macPath );
+    else
+        return DataSourcePath::create( resourcePath );
+}
+
+- (void)glSetup
+{
+    ImageSourceFileQuartz::registerSelf();
+    mIsGLSetup = true;
+}
+
+- (void)update:(NSTimeInterval)elapsed
+{
+    // update
+    // seconds since we started the app (minus setup time)
+    float secs = mTime / 2.0f;
+    
+    if ([self didValueForInputKeyChange:@"inputCount"])
+    {
+        mCount = (int)[self floatParam:@"inputCount"];
+        for (int i=0; i<mCount; i++)
+        {
+            float freq = (51.0 + i)/60.0;
+            mPendulums[i] = new Pendulum(mCount, i, freq, 0);
+        }
+    }
+    mPendulumSize = [self floatParam:@"inputSize"];
+    mWidth = [[self valueForInputKey:@"inputWidth"] floatValue];
+    mHeight = [[self valueForInputKey:@"inputHeight"] floatValue];
+    
+    // loop through, update and draw pendulums
+    for (int c=0; c<mCount; c++)
+        mPendulums[c]->update(secs, c, mWidth, mHeight, mPendulumSize);
+}
+
+- (void)render
+{
+    gl::setMatricesWindow(mWidth, mHeight);
+    
+    // clear out the window with black
+    gl::clear( Color( 0, 0, 0 ) );
+    
+    //gl::setMatricesWindowPersp(size.width, size.height);
+    //gl::clear( Color( 0, 0, 0 ) );
+    
+    // loop through, update and draw pendulums
+    for (int c=0; c<mCount; c++)
+        mPendulums[c]->draw(mPendulums, mCount);
+}
+
+- (BOOL)startExecution:(id<QCPlugInContext>)context;
+{
+    mWidth = 640.0f; mHeight = 480.0f;
+    mSize = CGSizeMake(mWidth, mHeight);
+    mLastTime = 0.0;
+    mIsGLSetup = false;
+    
+    [self setup];
+    
+    // save time we have finished the setup, to ensure pendulums start at t==0
+    //startTime = getElapsedSeconds();
+    return YES;
 }
 
 - (void) enableExecution:(id<QCPlugInContext>)context
 {
-	/*
-	Called by Quartz Composer when the plug-in instance starts being used by Quartz Composer.
-	*/
+    /*
+     Called by Quartz Composer when the plug-in instance starts being used by Quartz Composer.
+     */
 }
 
 - (BOOL) execute:(id<QCPlugInContext>)context atTime:(NSTimeInterval)time withArguments:(NSDictionary *)arguments
-{   
-	CGLContextObj ctx = CGLGetCurrentContext();
-	CGLContextObj cgl_ctx = [context CGLContextObj];
-	CGLSetCurrentContext(cgl_ctx);
+{
+    CGLContextObj cgl_ctx = [context CGLContextObj];
+    CGLSetCurrentContext(cgl_ctx);
     
-    NSRect bounds = [context bounds];
+    if (!mIsGLSetup)
+        [self glSetup];
+    
+    mWidth = [self floatParam:@"inputWidth"];
+    mHeight = [self floatParam:@"inputHeight"];
+    mSize = CGSizeMake(mWidth, mHeight);
     
     // update
-    // seconds since we started the app (minus setup time)
-    float secs = time / 2.0f;
-        
-    if ([self didValueForInputKeyChange:@"inputCount"]) 
-    {
-        count = [[self valueForInputKey:@"inputCount"] intValue];
-        for (int i=0; i<count; i++)
-        {
-            float freq = (51.0 + i)/60.0;
-            pendulums[i] = new Pendulum(count, i, freq, 0);
-        }
-    }
-    if ([self didValueForInputKeyChange:@"inputSize"]) 
-        size = [[self valueForInputKey:@"inputSize"] floatValue];
-    if ([self didValueForInputKeyChange:@"inputWidth"]) 
-        width = [[self valueForInputKey:@"inputWidth"] floatValue];
-    if ([self didValueForInputKeyChange:@"inputHeight"]) 
-        height = [[self valueForInputKey:@"inputHeight"] floatValue];
+    double elapsed = (time-mLastTime) * 1.0f;//[self floatParam:@"inputSpeedScale"];
+    mTime = mTime + elapsed * 1.0f;//[self floatParam:@"inputSpeedScale"];
+    [self update:elapsed];
+    mLastTime = time;
     
-    // loop through, update and draw pendulums
-    for (int c=0; c<count; c++) 
-        pendulums[c]->update(secs, c, width, height, size);
+    // draw
+    [self render];
     
-    MyTextureImageProvider* textureImageProvider = [MyTextureImageProvider alloc];
-    self.outputVideoImage = [[textureImageProvider initWithPendulums:pendulums withSize:CGSizeMake(width, height) withCount:count] autorelease];
-    
-	CGLSetCurrentContext(ctx);	
-	return YES;
+    return YES;
 }
-
-
-// should disconnect from kinect, but I didn't see it in the APIs
 
 - (void) disableExecution:(id<QCPlugInContext>)context
 {
-	/*
-	Called by Quartz Composer when the plug-in instance stops being used by Quartz Composer.
-	*/
+    /*
+     Called by Quartz Composer when the plug-in instance stops being used by Quartz Composer.
+     */
 }
 
 - (void) stopExecution:(id<QCPlugInContext>)context
 {
-	/*
-	Called by Quartz Composer when rendering of the composition stops: perform any required cleanup for the plug-in.
-	*/
+    /*
+     Called by Quartz Composer when rendering of the composition stops: perform any required cleanup for the plug-in.
+     */
 }
 
 @end

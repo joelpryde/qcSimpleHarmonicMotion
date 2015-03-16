@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>8A070BF3-5D1E-4A6D-B5BB-BBFE7147BC06</string>
+	<key>IDESourceControlProjectName</key>
+	<string>qcSimpleHarmonicMotion</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>FA80FACE388FCDD3B12B18C2FB3C0F0404F8A8BF</key>
+		<string>https://github.com/joelpryde/qcSimpleHarmonicMotion.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>qcSimpleHarmonicMotion.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>FA80FACE388FCDD3B12B18C2FB3C0F0404F8A8BF</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/joelpryde/qcSimpleHarmonicMotion.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>FA80FACE388FCDD3B12B18C2FB3C0F0404F8A8BF</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>FA80FACE388FCDD3B12B18C2FB3C0F0404F8A8BF</string>
+			<key>IDESourceControlWCCName</key>
+			<string>qcSimpleHarmonicMotion</string>
+		</dict>
+	</array>
+</dict>
+</plist>

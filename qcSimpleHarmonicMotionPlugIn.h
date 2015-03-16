@@ -1,9 +1,9 @@
 //
-//  kinectComposerPlugIn.h
-//  kinectComposer
+//  qcSimpleHarmonicMotionPlugin.h
+//  qcSimpleHarmonicMotionPlugin
 //
-//  Created by Devin Chalmers on 12/19/10.
-//  Copyright (c) 2010 __MyCompanyName__. All rights reserved.
+//  Created by Joel Pryde on 12/19/13.
+//  Copyright (c) 2013 __MyCompanyName__. All rights reserved.
 //
 
 #import <Quartz/Quartz.h>
@@ -15,20 +15,37 @@ class Pendulum;
 
 @interface qcSimpleHarmonicMotionPlugIn : QCPlugIn
 {
-    int count;
-    Pendulum* pendulums[100];
-    float startTime;
+    float mStartTime;
+    bool mIsGLSetup;
     
-    float size;
-    float width;
-    float height;
+    CGSize mSize;
+    float mWidth;
+    float mHeight;
+    NSTimeInterval mTime;
+    double mLastTime;
+    
+    int mCount;
+    Pendulum* mPendulums[100];
+    float mPendulumSize;
 }
 
-@property (assign) id<QCPlugInOutputImageProvider> outputVideoImage;
+@property (assign) double inputWidth;
+@property (assign) double inputHeight;
 
 @property (assign) double inputCount;
 @property (assign) double inputSize;
-@property (assign) double inputWidth;
-@property (assign) double inputHeight;
+
+@property (assign) CGSize size;
+
++ (void)addFloatAttribute:(NSString *)key Default:(float)def Min:(float)min Max:(float)max;
++ (void)addBoolAttribute:(NSString *)key Default:(bool)def;
+- (float)floatParam:(NSString*)paramName;
+- (NSString*)stringParam:(NSString*)paramName;
+- (bool)boolParam:(NSString*)paramName;
+
+- (void)setup;
+- (void)glSetup;
+- (void)update:(NSTimeInterval)time;
+- (void)render;
 
 @end
